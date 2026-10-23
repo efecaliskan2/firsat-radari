@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Hackathon, girişimcilik programı ve yapay zeka eğitimlerini tek yerde toplayan kişisel radar.">
+<title>Fırsat Radarı</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23191714'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23f0a646' stroke-opacity='.35' stroke-width='1.5'/%3E%3Ccircle cx='16' cy='16' r='5' fill='none' stroke='%23f0a646' stroke-opacity='.5' stroke-width='1.5'/%3E%3Ccircle cx='21.5' cy='10.5' r='2.4' fill='%23f0a646'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<a class="skip" href="#main">İçeriğe geç</a>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="bar">
+  <div class="bar-in">
+    <a class="logo" href="#" data-tab="explore" aria-label="Fırsat Radarı ana sayfa">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="13" class="lr1"/><circle cx="16" cy="16" r="7.5" class="lr2"/><path d="M16 16 L16 3 A13 13 0 0 1 27.3 9.5 Z" class="lsw"/><circle cx="22.6" cy="9.6" r="2.3" class="ldot"/></svg>
+      <span>Fırsat<em>Radarı</em></span>
+    </a>
+    <nav class="tabs" id="tabs" aria-label="Bölümler">
+      <button data-tab="explore" class="on">Keşfet</button>
+      <button data-tab="saved">Takibim <b id="cSaved"></b></button>
+      <button data-tab="applied">Başvurduklarım <b id="cApplied"></b></button>
+      <button data-tab="settings">Ayarlar</button>
+    </nav>
+    <div class="scan">
+      <span id="lastRun" class="scan-meta"></span>
+      <button id="scanBtn" class="btn-accent">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v4h-4"/></svg>
+        <span>Şimdi tara</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <!-- ============================== KEŞFET ============================== -->
+  <section id="explore" class="view">
+    <div class="hero">
+      <div class="hero-text">
+        <p class="eyebrow" id="today"></p>
+        <h1 id="headline">Radar ısınıyor…</h1>
+        <p class="lede" id="lede"></p>
+        <div class="seg" id="regions" role="tablist" aria-label="Bölge"></div>
+        <dl class="stats" id="stats"></dl>
+      </div>
+      <div class="radar-wrap">
+        <svg id="radar" viewBox="-200 -200 400 400" role="img" aria-label="Son tarihe göre fırsat radarı"></svg>
+        <div id="tip" class="tip" hidden></div>
+        <p class="radar-cap">Merkeze ne kadar yakınsa, son gün o kadar yakın.</p>
+      </div>
+    </div>
+
+    <section id="deadlines" class="track" hidden aria-label="Takibindekilerin geri sayımı">
+      <header class="sec-h"><h2>Takibindekiler</h2><span class="sec-note">son güne göre</span></header>
+      <div class="track-row" id="trackRow"></div>
+    </section>
+
+    <div class="toolbar">
+      <label class="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg>
+        <input id="q" type="search" placeholder="agent, kuluçka, İstanbul…" aria-label="Fırsatlarda ara">
+      </label>
+      <div class="cats" id="cats" role="tablist" aria-label="Kategori"></div>
+    </div>
+    <div class="subbar">
+      <label class="switch"><input type="checkbox" id="newOnly"><i></i>Sadece yeniler</label>
+      <label class="range">Uygunluk ≥ <output id="minScoreV">3</output>
+        <input id="minScore" type="range" min="0" max="9" value="3" aria-label="En düşük uygunluk puanı"></label>
+      <label class="select">
+        <select id="sort" aria-label="Sıralama">
+          <option value="score">Sana en uygun</option>
+          <option value="date">Son günü en yakın</option>
+          <option value="recent">En yeni bulunan</option>
+        </select>
+      </label>
+      <button id="seenAll" class="btn-text">Hepsini görüldü say</button>
+      <span id="summary" class="summary"></span>
+    </div>
+
+    <div id="featured" class="featured"></div>
+    <ol id="list" class="rows"></ol>
+  </section>
+
+  <!-- ============================== TAKİBİM ============================== -->
+  <section id="saved" class="view" hidden>
+    <header class="page-h">
+      <p class="eyebrow">Takibim</p>
+      <h1>Gözünü ayırmadıkların</h1>
+      <p class="lede">Son güne 7, 3 ve 1 gün kala hem bilgisayarına hem Telegram'a hatırlatma gelir.</p>
+    </header>
+    <ol class="rows" id="savedList"></ol>
+  </section>
+
+  <!-- ============================== BAŞVURDUKLARIM ============================== -->
+  <section id="applied" class="view" hidden>
+    <header class="page-h">
+      <p class="eyebrow">Başvurduklarım</p>
+      <h1>Yola çıktıkların</h1>
+      <p class="lede">Başvurduğun her şey burada; tarihi geçse de silinmez.</p>
+    </header>
+    <ol class="rows" id="appliedList"></ol>
+  </section>
+
+  <!-- ============================== AYARLAR ============================== -->
+  <section id="settings" class="view" hidden>
+    <header class="page-h">
+      <p class="eyebrow">Ayarlar</p>
+      <h1>Radarı kendine göre ayarla</h1>
+    </header>
+    <div class="set-grid">
+      <section class="panel">
+        <h3>Bildirimler</h3>
+        <label class="field"><span>Bu puan ve üstü yeni fırsatları bildir</span>
+          <input id="sNotify" type="number" min="1" max="10"></label>
+        <label class="field"><span>Kaç saatte bir taransın</span>
+          <input id="sHours" type="number" min="1" max="48"></label>
+        <p class="hint">Bildirimler, uygulama tepside çalışırken gelir (bilgisayar açılınca kendiliğinden başlar).</p>
+      </section>
+
+      <section class="panel">
+        <h3>Telegram</h3>
+        <p id="tgState" class="tg-state"></p>
+        <p class="hint">Kendi botunun token'ı (@BotFather → /newbot). Yalnızca bu bilgisayarda saklanır, bir daha gösterilmez.</p>
+        <input id="tgToken" class="input" type="password" placeholder="123456:ABC…" autocomplete="off" aria-label="Telegram bot token">
+        <label class="switch"><input type="checkbox" id="tgOn" checked><i></i>Telegram bildirimleri açık</label>
+        <div class="btn-row">
+          <button id="tgSave" class="btn-quiet">Kaydet</button>
+          <button id="tgTest" class="btn-quiet">Test mesajı gönder</button>
+        </div>
+        <p id="tgMsg" class="hint"></p>
+      </section>
+
+      <section class="panel">
+        <h3>Kaynaklar</h3>
+        <div id="sSources" class="checks"></div>
+        <div id="sErrors"></div>
+      </section>
+
+      <section class="panel">
+        <h3>İlgi alanların</h3>
+        <p class="hint">Puanı yükselten kelimeler, virgülle (ör. fintech, sağlık, robotik).</p>
+        <textarea id="sKeywords" class="input" rows="2"></textarea>
+        <h3 class="mt">Ek haber aramaları</h3>
+        <p class="hint">Google News'te ayrıca aranır. Her satıra bir arama.</p>
+        <textarea id="sQueries" class="input" rows="3"></textarea>
+      </section>
+
+      <section class="panel wide">
+        <h3>İzlenen program sayfaları</h3>
+        <p class="hint">Bu sayfalardaki başvuru ve tarih cümleleri değişince haber verir. Her satır: <code>Ad | https://adres</code></p>
+        <textarea id="sPages" class="input mono" rows="6"></textarea>
+      </section>
+    </div>
+    <div class="save-row">
+      <button id="saveSettings" class="btn-accent"><span>Ayarları kaydet</span></button>
+      <span id="savedMsg" class="hint"></span>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<template id="rowT">
+  <li class="row">
+    <div class="when"><b class="d"></b><span class="m"></span><small class="lbl"></small></div>
+    <div class="thumb"></div>
+    <div class="body">
+      <p class="kicker"><span class="kcat"></span><span class="ksrc"></span><span class="knew">yeni</span></p>
+      <h3 class="title"><a href="#"></a></h3>
+      <p class="meta"></p>
+      <p class="desc"></p>
+    </div>
+    <div class="score" title="Sana uygunluk (0–10)"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" class="sb"/><circle cx="18" cy="18" r="15" class="sf"/></svg><span></span></div>
+    <div class="acts">
+      <button class="ic a-save" title="Takibe al"><svg viewBox="0 0 24 24"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z"/></svg></button>
+      <button class="ic a-applied" title="Başvurdum olarak işaretle"><svg viewBox="0 0 24 24"><path d="m4.5 12.5 4.8 4.8L19.5 7"/></svg></button>
+      <button class="ic a-cal" title="Google Takvim'e ekle"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></button>
+      <button class="ic a-hide" title="Gizle"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+  </li>
+</template>
+
+<template id="featT">
+  <article class="feat">
+    <div class="feat-img"></div>
+    <div class="feat-body">
+      <p class="kicker"><span class="kcat"></span><span class="ksrc"></span><span class="knew">yeni</span></p>
+      <h3 class="title"><a href="#"></a></h3>
+      <p class="meta"></p>
+      <div class="feat-foot">
+        <span class="count"></span>
+        <div class="acts">
+          <button class="ic a-save" title="Takibe al"><svg viewBox="0 0 24 24"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z"/></svg></button>
+          <button class="ic a-cal" title="Google Takvim'e ekle"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></button>
+          <button class="btn-open">Aç <svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </article>
+</template>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

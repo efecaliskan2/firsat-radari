@@ -1,0 +1,19 @@
+# Kişisel veri ve gizli bilgiler — ASLA depoya girmez
+#   data/radar.db       fırsatlar + takip/başvuru durumların
+#   data/telegram.json  Telegram bot token'ı ve sohbet numarası
+#   data/config.json    kişisel ayarlar
+#   data/news_cache.json
+data/
+*.db
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Sistem
+Thumbs.db
+desktop.ini
+.DS_Store
